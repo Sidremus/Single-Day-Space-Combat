@@ -6,8 +6,6 @@ render_mode unshaded;
 
 uniform int outline_mode : hint_range(1, 3, 1) = 3;
 uniform float outline_intensity : hint_range(0, 5) = 1;
-uniform bool _round = false;
-uniform float outline_bias : hint_range(-10, 10) = 0;
 uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
 uniform sampler2D DEPTH_TEXTURE : hint_depth_texture, filter_linear_mipmap;
 uniform vec4 outline_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
@@ -49,13 +47,8 @@ void fragment() {
 		ALPHA *= 50000.0*outline_intensity;
 	}
 	
-	ALPHA += outline_bias;
-	
-	if (_round) {
-		ALPHA = round(ALPHA);
-	}
-	
 	ALPHA *= outline_color.a;
+	ALPHA = clamp(ALPHA,0.,1.);
 }
 
 //Written by Warren Jennings

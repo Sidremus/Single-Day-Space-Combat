@@ -1,2 +1,5 @@
 res://space.tscn
 res://screen_esdge_detection.gdshader
+res://Ship.gd
+res://UI.gd
+res://Global.gd

@@ -1,12 +1,14 @@
-[gd_scene load_steps=15 format=3 uid="uid://b7oufysbp85wv"]
+[gd_scene load_steps=20 format=3 uid="uid://b7oufysbp85wv"]
 
 [ext_resource type="Texture2D" uid="uid://bosfmpbsb8ajd" path="res://stars.png" id="1_wnmn3"]
 [ext_resource type="PackedScene" uid="uid://cw3ktf4yyhnet" path="res://models.blend" id="2_2iqou"]
 [ext_resource type="Shader" path="res://screen_esdge_detection.gdshader" id="2_bsre6"]
+[ext_resource type="Script" path="res://Ship.gd" id="2_novok"]
+[ext_resource type="Texture2D" uid="uid://brqyxtb67o05h" path="res://crosshair012.png" id="3_4b1jd"]
+[ext_resource type="Script" path="res://UI.gd" id="3_wa8bf"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_rpwt8"]
 panorama = ExtResource("1_wnmn3")
-filter = false
 
 [sub_resource type="Sky" id="Sky_a67nb"]
 sky_material = SubResource("PanoramaSkyMaterial_rpwt8")
@@ -31,22 +33,28 @@ fog_light_color = Color(0, 0, 0, 1)
 fog_density = 20.0
 fog_sky_affect = 0.0
 
+[sub_resource type="Curve" id="Curve_g1qcw"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.300761), -2.07384, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_87mhy"]
+_data = [Vector2(0.00508788, 0), 0.0, 0.0, 0, 0, Vector2(0.0855689, 0.0574477), 1.34514, 1.34514, 0, 0, Vector2(0.837434, 0.660498), 0.551861, 0.551861, 0, 0, Vector2(1, 0.991007), 4.75173, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_2kly8"]
+points = PackedVector3Array(0.159246, -0.0226368, -0.192059, -0.159246, -0.0226368, -0.192059, -3.11881e-05, 0.0649403, -0.084088, -3.11881e-05, -0.0094504, 0.422445, -3.11881e-05, -0.0549107, -0.0168391)
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_limff"]
 render_priority = 0
 shader = ExtResource("2_bsre6")
 shader_parameter/outline_mode = 3
 shader_parameter/outline_intensity = 0.398
-shader_parameter/_round = false
-shader_parameter/outline_bias = 0.0
 shader_parameter/outline_color = Color(1, 1, 1, 1)
 
 [sub_resource type="QuadMesh" id="QuadMesh_otgfs"]
 material = SubResource("ShaderMaterial_limff")
 flip_faces = true
 size = Vector2(2, 2)
-
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_2kly8"]
-points = PackedVector3Array(0.159246, -0.0226368, -0.192059, -0.159246, -0.0226368, -0.192059, -3.11881e-05, 0.0649403, -0.084088, -3.11881e-05, -0.0094504, 0.422445, -3.11881e-05, -0.0549107, -0.0168391)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wvqdx"]
 shading_mode = 0
@@ -73,6 +81,9 @@ texture_filter = 0
 texture_repeat = false
 proximity_fade_enabled = true
 proximity_fade_distance = 0.03
+distance_fade_mode = 1
+distance_fade_min_distance = 0.08
+distance_fade_max_distance = 0.14
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_3sfdc"]
 material = SubResource("StandardMaterial3D_md1w0")
@@ -88,29 +99,55 @@ cap_top = false
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_s7mte")
 
-[node name="models2" parent="." instance=ExtResource("2_2iqou")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -6.3337e-09, -0.0358339, 0.0098487)
+[node name="Ship" type="CharacterBody3D" parent="."]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
+script = ExtResource("2_novok")
+acc_curve = SubResource("Curve_g1qcw")
+rot_curve = SubResource("Curve_87mhy")
 
-[node name="Fighter01" parent="models2" index="0"]
-visible = false
+[node name="UI" type="Control" parent="Ship"]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+script = ExtResource("3_wa8bf")
 
-[node name="Camera3D" type="Camera3D" parent="models2"]
+[node name="Crosshair" type="TextureRect" parent="Ship/UI"]
+layout_mode = 0
+offset_left = 881.0
+offset_top = 750.0
+offset_right = 1025.0
+offset_bottom = 894.0
+scale = Vector2(0.5, 0.5)
+pivot_offset = Vector2(72, 72)
+texture = ExtResource("3_4b1jd")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ship"]
+transform = Transform3D(1, 0, 1.74846e-07, 0, 1, 0, -1.74846e-07, 0, 1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_2kly8")
+
+[node name="Camera3D" type="Camera3D" parent="Ship/CollisionShape3D"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
 current = true
 fov = 85.0
 near = 0.017
 far = 500.0
 
-[node name="EdgeDetectionMesh" type="MeshInstance3D" parent="models2/Camera3D"]
+[node name="EdgeDetectionMesh" type="MeshInstance3D" parent="Ship/CollisionShape3D/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0657016)
 extra_cull_margin = 16384.0
 mesh = SubResource("QuadMesh_otgfs")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="models2/Camera3D"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -6.3337e-09, -0.0106185, 0.00709749)
-shape = SubResource("ConvexPolygonShape3D_2kly8")
+[node name="Cockpit" type="Node3D" parent="Ship/CollisionShape3D/Camera3D"]
 
-[node name="Cockpit" type="Node3D" parent="models2/Camera3D"]
+[node name="models2" parent="Ship/CollisionShape3D" instance=ExtResource("2_2iqou")]
+
+[node name="Fighter01" parent="Ship/CollisionShape3D/models2" index="0"]
+visible = false
 
 [node name="models" parent="." instance=ExtResource("2_2iqou")]
 transform = Transform3D(0.732156, 0.337941, -0.591392, -0.657633, 0.576838, -0.484538, 0.177391, 0.743676, 0.644576, -0.2471, 5.96046e-08, -3.03344)
@@ -132,5 +169,5 @@ visible = false
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 visible = false
 
-[editable path="models2"]
+[editable path="Ship/CollisionShape3D/models2"]
 [editable path="models"]
