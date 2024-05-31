@@ -1,7 +1,7 @@
 extends Node
 
-func _ready() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_CONFINED
+#func _ready() -> void:
+	#Input.mouse_mode = Input.MOUSE_MODE_CONFINED
 
 func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("ui_cancel"): get_tree().quit()
