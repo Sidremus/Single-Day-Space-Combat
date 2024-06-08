@@ -1,5 +1,7 @@
 res://space.tscn
 res://screen_esdge_detection.gdshader
+res://Global.gd
 res://Ship.gd
 res://UI.gd
 res://MotionLines.gd
+res://CamControl.gd

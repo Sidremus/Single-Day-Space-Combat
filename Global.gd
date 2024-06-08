@@ -1,7 +1,11 @@
 extends Node
 
+### Settings
+var is_drift_toggle:bool = true
+
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CONFINED_HIDDEN
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("ui_cancel"): get_tree().quit()
